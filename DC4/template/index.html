@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> channel layer</title>
+</head>
+<body>
+    <div>
+        <h1> Chat Application </h1>
+        <textarea id="chat-textarea" cols="100" rows="30"></textarea>
+        <br>
+        <input type="text" id="chat-message-send">
+        <br>
+        <input type="submit" id="chat-message-sumbit" value="Send">
+    </div>
+    <script>
+        var ws = new WebSocket('ws://127.0.0.1:8000/ws/ac/')
+        ws.onopen = function(){
+            console.log('websocket connected...')
+        }
+        ws.onmessage = function(event){
+            console.log('Message received from server...',event.data)
+            console.log('Message received from server...',typeof(event.data))
+            const data = JSON.parse(event.data)
+            console.log('message type..',typeof(data))
+            console.log('Actual message...',data.msg)
+            document.getElementById('chat-textarea').value += (data.msg+'\n')
+    
+        }
+        ws.onerror = function(event){
+            console.log('Websocket error occured...')
+        }
+        ws.onclose = function(){
+            console.log('websocket connection closed...')
+        }
+        document.getElementById('chat-message-sumbit').onclick = function(){
+            var messageDom = document.getElementById('chat-message-send')
+            var message = messageDom.value
+            ws.send(JSON.stringify({
+                'msg':message
+            }))
+            messageDom.value = ''
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Websocket Generic</title>
+</head>
+<body>
+    <center>
+    <h1> Group Name: {{groupName}}</h1>
+    <br>
+    <textarea class="form-control" id="chat-box" cols="120" rows="20">
+        {% for chat in chats %}
+            {{chat.content}}
+        {% empty %}
+        {% endfor %}
+    </textarea>
+    <br>
+    <input type="text" id="chat-message"><br>
+    <input type="submit" value="Send" id="chat-message-send">
+    {{ groupName | json_script:'group-name'}}
+    </center>   
+    <script>
+        const groupName = JSON.parse(document.getElementById('group-name').textContent)
+        console.log('Group name is ..',groupName)
+        // var ws = new WebSocket('ws://127.0.0.1:8000/ws/awsc/')
+        var ws = new WebSocket(
+            'ws://' + window.location.host + '/ws/awsc/' + groupName + '/'
+        )
+        ws.onopen = function(){
+            console.log('Websocket connected..')
+        ws.onmessage = function(event){
+            console.log('Message received from server...',event)
+            console.log(event.data)
+            var  data =  JSON.parse(event.data)
+            // document.getElementById('chat-box').value += ( data.chat+ '\n')
+            document.querySelector('#chat-box').value += (data.chat + '\n')
+        ws.onerror = function(){
+            console.log('Websocket error occured...')
+        ws.onclose = function(){
+            console.log('websocket connection close...')
+        }
+        }
+        }
+        }
+        document.getElementById('chat-message-send').onclick = function(event){
+            var chatInputDom = document.getElementById('chat-message')
+            var chat = chatInputDom.value
+            ws.send(JSON.stringify({
+                "chat" : chat
+            }))
+            chatInputDom.value = ''
+        }
+    </script>
+</body>
+</html>

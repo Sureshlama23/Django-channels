@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DC</title>
+</head>
+<body>
+    <h1> Django Channels</h1>
+    <h2 id="ct"></h2>
+
+    <script>
+        var ws = new WebSocket('ws://127.0.0.1:8000/ws/ac/')
+        ws.onopen = function (){
+            console.log('Web connection open...')
+            ws.send('Hi message from client...')
+        }
+        ws.onmessage = function (event){
+            console.log('Message received from the server...',event.data)
+            console.log('Type of ',typeof(event.data))
+            var data = JSON.parse(event.data)
+            console.log('type of ',typeof(data))
+            document.getElementById('ct').innerText = data.count
+        }
+        ws.onerror = function (event){
+            console.log('Websocket error occured...',event)
+        }
+        ws.onclose = function (event){
+            console.log('Websocket connection closed',event)
+        }
+    </script>
+</body>
+</html>
